@@ -5,13 +5,12 @@
 // Execute `rustlings hint enums3` or use the `hint` watch subcommand for a
 // hint.
 
-
 enum Message {
-    Quit,
-    Echo(String),
-    Move{x:i32,y:i32},
-    ChangeColor(i32,i32,i32),
     // TODO: implement the message variant types based on their usage below
+    ChangeColor(u8, u8, u8),
+    Echo(String),
+    Move(Point),
+    Quit,
 }
 
 struct Point {
@@ -23,7 +22,7 @@ struct State {
     color: (u8, u8, u8),
     position: Point,
     quit: bool,
-    message: String
+    message: String,
 }
 
 impl State {
@@ -35,31 +34,26 @@ impl State {
         self.quit = true;
     }
 
-    fn echo(&mut self, s: String) { self.message = s }
+    fn echo(&mut self, s: String) {
+        self.message = s
+    }
 
     fn move_position(&mut self, p: Point) {
         self.position = p;
     }
 
     fn process(&mut self, message: Message) {
-        match message{
-            Message::ChangeColor(r,g,b)=>{
-                self.change_color((r as u8,g as u8,b as u8));
-            }
-            Message::Echo(s)=>{
-                self.echo(s);
-            }
-            Message::Move{x,y}=>{
-                self.move_position(Point{x:x as u8,y:y as u8});
-            }
-            Message::Quit=>{
-                self.quit()
-            }
-        }
         // TODO: create a match expression to process the different message
         // variants
         // Remember: When passing a tuple as a function argument, you'll need
         // extra parentheses: fn function((t, u, p, l, e))
+
+        match message {
+            Message::ChangeColor(r, g, b) => self.change_color((r, g, b)),
+            Message::Echo(s) => self.echo(s),
+            Message::Move(p) => self.move_position(p),
+            Message::Quit => self.quit(),
+        }
     }
 }
 
@@ -77,7 +71,7 @@ mod tests {
         };
         state.process(Message::ChangeColor(255, 0, 255));
         state.process(Message::Echo(String::from("hello world")));
-        state.process(Message::Move { x: 10, y: 15 });
+        state.process(Message::Move(Point { x: 10, y: 15 }));
         state.process(Message::Quit);
 
         assert_eq!(state.color, (255, 0, 255));
